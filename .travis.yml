@@ -1,0 +1,21 @@
+os: osx
+language: objective-c
+osx_image: xcode10.1
+sudo: false
+script:
+- clang -fobjc-arc -framework IOKit *.c -o ./iousbpoc
+before_deploy:
+- git config --local user.name "Muirey03"
+- git config --local user.email "tommy.muir@btinternet.com"
+- export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+- git tag $TRAVIS_TAG
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: FRuGO95b04woeUpqkMgegIbo7iTv0yk5im1s8ujWWtelpv7Ezig9JHrWxxdTNMXNMF/6S9bILoBx0T8YcN+i9FWqosRuIrxsEreShDRVUrS6KAjl5eDiIqcIWwkTcRUpzeuYWHvMJBtm3c0MFzUmdSF9KZAfs+yrzaAxQv0b2yFLFhQLSogfB4OTOSGjuWcliHZp4WRbL9I8vn6d0bV8isDG7Vlo8U0C8HQiI+9GoNFy23CZJGZhPppeapxuGbw4Q3xSG/jKlyBYgPyD8kAX353qRY7OJ+Adnn0Q7PMF4PkhFX4m8omTS64GuGrmNYKFzUMNedTmHWZXORAnCpbf4YO71YRLX6IuLhpn2Bp28eE7x3VY9KxQPOAb0jl18eCzQrtTM6vTHWl1TE5x5WhbMF0ToIWFQVF7e+ipeIbb0wwCOFD/6GqJ6pIOQgw5mDxP9wloPM4anuidZsru3PvVDE31mjsjhKtUs1oITvRP6xgsW26Fk8evFAwsOWXbkZikG7UpcXnWwSFPu3DrW3MlY+ENR/BiK3NvRbHdh2bYyqYLuakigPRBAfxekeFdFXBNyg4G5Uw4cG10Hgp+lb90LeEijGGydT/12SvbuXQh6+eVdo9Fn4tZ5oIupLScVttX8tvfikT9sKK76oJR4TtwyE4srpTqyMrvMpNBO/t/FuI=
+  file_glob: true
+  file: "iousbpoc"
+  on:
+    repo: Muirey03/iousbpoc
+    branch: master
