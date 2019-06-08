@@ -52,7 +52,7 @@ int main(int argc, char** argv, char** envp)
 		}
 		mach_port_t port = create_port();
 
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 9999; i++)
 		{
 			IOConnectCallAsyncMethod(	client, 22, port, NULL, 0,
 										NULL, 0, NULL, 0,
