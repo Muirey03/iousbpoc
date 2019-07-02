@@ -40,40 +40,36 @@ int main(int argc, char** argv, char** envp)
 		return -1;
 	}
 
-	for (int client_no = 0; client_no < 5; client_no++)
+	client = MACH_PORT_NULL;
+	kr = IOServiceOpen(service, mach_task_self(), 0, (io_connect_t*)&client);
+	if (kr != KERN_SUCCESS)
 	{
-		printf("Client %d\n", client_no);
-		client = MACH_PORT_NULL;
-		kr = IOServiceOpen(service, mach_task_self(), client_no, (io_connect_t*)&client);
-		if (kr != KERN_SUCCESS)
-		{
-			printf("Unable to open client %d: %s\n", client_no, mach_error_string(kr));
-			continue;
-		}
-		mach_port_t port = create_port();
-
-		for (int i = 0; i < 9999; i++)
-		{
-			IOConnectCallAsyncMethod(	client, 22, port, NULL, 0,
-										NULL, 0, NULL, 0,
-										NULL, NULL, NULL, NULL);
-
-			start = false;
-			int n_threads = 2;
-			pthread_t threads[n_threads];
-			for (int t = 0; t < n_threads; t++)
-			{
-				pthread_create(&(threads[t]), NULL, racer, NULL);
-			}
-			start = true;
-			for(int t = 0; t < n_threads; t++)
-			{
-				pthread_join(threads[t], NULL);
-			}
-		}
-
-		mach_port_destroy(mach_task_self(), port);
+		printf("Unable to open client: %s\n", mach_error_string(kr));
+		return -1;
 	}
+	mach_port_t port = create_port();
+
+	for (int i = 0; i < 100; i++)
+	{
+		IOConnectCallAsyncMethod(	client, 22, port, NULL, 0,
+									NULL, 0, NULL, 0,
+									NULL, NULL, NULL, NULL);
+
+		start = false;
+		int n_threads = 2;
+		pthread_t threads[n_threads];
+		for (int t = 0; t < n_threads; t++)
+		{
+			pthread_create(&(threads[t]), NULL, racer, NULL);
+		}
+		start = true;
+		for (int t = 0; t < n_threads; t++)
+		{
+			pthread_join(threads[t], NULL);
+		}
+	}
+
+	mach_port_destroy(mach_task_self(), port);
 
 	return 0;
 }
