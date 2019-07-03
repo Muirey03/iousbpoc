@@ -16,12 +16,12 @@ IOReturn IOUSBInterfaceUserClientV2::SetAsyncPort(mach_port_t port)
 		super::releaseNotificationPort(fWakePort);
 		fWakePort = MACH_PORT_NULL;
 	}
-	
-    if (!fOwner)
-        return kIOReturnNotAttached;
-	
-    fWakePort = port;
-    return kIOReturnSuccess;
+
+	if (!fOwner)
+		return kIOReturnNotAttached;
+
+	fWakePort = port;
+	return kIOReturnSuccess;
 }
 ```
 
